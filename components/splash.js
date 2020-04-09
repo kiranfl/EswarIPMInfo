@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {View, Text, Image, StyleSheet, FlatList} from 'react-native';
-import {DrawerActions} from '@react-navigation/native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import HomeSreen from './Home';
+import {View, Text, Image, StyleSheet, StatusBar, Platform} from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -32,71 +33,58 @@ class Splash extends React.Component {
   }
 
   componentDidMount() {
-    setInterval(() => {this.props.navigation.navigate('Main')}, 3000);
-  };
-
+    setInterval(() => {
+      this.props.navigation.navigate('Main');
+    }, 3000);
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>IPMinfo</Text>
+        <View style={{flex: 1, justifyContent: 'center'}}>
+        <Text style={styles.textHeading}>IPMinfo</Text>
+        </View>
+        <View styel={styles.textCotainer}>
+          <Text style={styles.text}>Version1.0</Text>
+        </View>
+        <StatusBar
+          style={styles.StatusBar}
+          backgroundColor="rgb(235, 183, 52)"
+        />
       </View>
     );
   }
 }
 
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
-    backgroundColor: 'green',
+    backgroundColor: 'rgb(235, 183, 52)',
     flex: 1,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  textHeading: {
+    fontSize: 40,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  StatusBar: {
+    backgroundColor: 'rgb(235, 183, 52)',
+    height: STATUSBAR_HEIGHT,
+  },
+  textCotainer: {flex: 1},
   text: {
-    fontSize: 30,
-  }
+    fontSize: 15,
+    color: 'white',
+    marginBottom: 60,
+  },
+  image: {
+    height: hp('10%'),
+    width: wp('20%'),
+  },
 });
-
-// <View
-//               style={styles.card}
-//               onTouchStart={() => console.log(item.name)}>
-//               <View style={styles.image}>
-//                 <Text>Images</Text>
-//               </View>
-//               <View style={styles.content}>
-//                 <Text>{item.name}</Text>
-//               </View>
-//             </View>
-// function DiseaseScreen(navigation, props) {
-//   return (
-//     <View style={styles.container}>
-//       <Text>Diseases</Text>
-//       <FlatList
-//         keyExtractor={item => item.key}
-//         data={this.state.data}
-//         renderItem={({item}) => (
-//           <View style={styles.card}>
-//             <View style={styles.image}>
-//               <Image />
-//             </View>
-//             <View style={styles.content}>
-//               <Text>{item.name}</Text>
-//             </View>
-//           </View>
-//         )}
-//       />
-//       <View style={styles.card}>
-//         <View style={styles.image}>
-//           <Image />
-//         </View>
-//         <View style={styles.content}>
-//           <Text>Sometext</Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
 
 export default Splash;

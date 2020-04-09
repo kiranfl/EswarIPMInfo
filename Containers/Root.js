@@ -1,5 +1,12 @@
 import * as React from 'react';
-import {Button, View, Text, Image, TouchableOpacity, BackHandler} from 'react-native';
+import {
+  Button,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  BackHandler,
+} from 'react-native';
 import {DrawerActions} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MoreDetailsScreen from './moredetails';
@@ -7,13 +14,10 @@ import HomeScreen from '../components/Home';
 import PreviewScreen from '../components/previewDisease';
 import Splash from '../components/splash';
 
-
 const Stack = createStackNavigator();
 
 function ButtonClick() {
-  return (
-    <Text>IPMinfo</Text>
-  )
+  return <Text>IPMinfo</Text>;
 }
 
 function Root({navigation}, props) {
@@ -24,6 +28,7 @@ function Root({navigation}, props) {
         component={HomeScreen}
         options={{
           headerTitle: props => <ButtonClick {...props} />,
+          headerStyle: {backgroundColor: 'rgb(235, 183, 52)'},
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
@@ -38,7 +43,14 @@ function Root({navigation}, props) {
           ),
         }}
       />
-      <Stack.Screen name="MoreDetails" component={MoreDetailsScreen} />
+      <Stack.Screen
+        name="MoreDetails"
+        component={MoreDetailsScreen}
+        options={{
+          headerTitle: props => <Text>IPMinfo</Text>,
+          headerStyle: {backgroundColor: 'rgb(235, 183, 52)'},
+        }}
+      />
       <Stack.Screen name="Preview" component={PreviewScreen} />
     </Stack.Navigator>
   );

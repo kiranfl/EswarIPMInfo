@@ -9,7 +9,9 @@ import {
 } from 'react-native';
 import {DrawerActions} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {connect} from 'react-redux';
 import HomeSreen from './Home';
+import {fetchDiseaseDetails} from '../redux/actions/actions';
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -21,59 +23,60 @@ class DiseaseScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      isLoaded: true,
+      diseasesList: [],
     };
   }
 
   componentDidMount = () => {
-    console.log(this.props);
-    this.setState({isLoaded: true});
-    const url = `http://23.20.169.44/api/en-us/crops/${
-      this.props.route.params.id
-    }/categories`;
-    fetch(url)
-      .then(response => response.json())
-      .then(responsejson => {
-        this.setState({
-          data: responsejson[0]._subCategories,
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    this.setState({isLoaded: false});
+    this.props.redFuncfetchDiseaseDetails(this.props.route.params.id);
   };
 
+  componentWillReceiveProps = nextProps => {
+    const {diseasesListAndPestsList} = nextProps.mainReducer;
+    const diseasesArray = diseasesListAndPestsList.filter(
+      val => val.name === 'Diseases',
+    );
+    this.setState({
+      diseasesList: diseasesArray[0]._subCategories,
+    });
+  };
+
+  renderItem = ({item, index}) => {
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() =>
+          this.props.navigation.navigate('diseaseDetails', {
+            data: {id: item._catposts[0]._id, name: item.name},
+          })
+        }>
+        <Image style={styles.cardImg} source={{uri: item.image}} />
+        <Text style={styles.cardText}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
   render() {
+    const {diseasesList} = this.state;
+    const {diseasesListAndPestsList, isLoading} = this.props.mainReducer;
+    if (isLoading) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
-        {this.state.isLoaded ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <View>
-            <Text style={{alignSelf: 'center', fontSize: 20}}>Diseases</Text>
-            <FlatList
-              numColumns={1}
-              keyExtractor={item => item._id}
-              data={this.state.data}
-              renderItem={({item}) => (
-                <View style={styles.card}>
-                  <Image style={styles.image} source={{uri: item.image}} />
-                  <TouchableOpacity
-                    style={styles.textClick}
-                    onPress={() =>
-                      this.props.navigation.navigate('Preview', {
-                        data: {name: item.name},
-                      })
-                    }>
-                    <Text style={styles.content}>{item.name}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            />
-          </View>
-        )}
+        <View
+          style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Diseases</Text>
+        </View>
+        <FlatList
+          style={styles.diseaseList}
+          data={diseasesList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={this.renderItem}
+        />
       </View>
     );
   }
@@ -81,84 +84,57 @@ class DiseaseScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
-    backgroundColor: '#f8f8ff',
     flex: 1,
-    width: '100%',
-    // alignItems: 'center',
+    flexDirection: 'column',
+    marginBottom: 10,
+  },
+  diseaseList: {
+    flex: 1,
   },
   card: {
-    backgroundColor: '#fff',
-    marginBottom: 10,
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    marginBottom: 5,
     marginLeft: '2%',
     width: '96%',
-    borderColor: 'black',
-    borderWidth: 1,
-  },
-  textClick: {
-    alignItems: 'center',
-    backgroundColor: 'gray',
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-  },
-  content: {
-    padding: 10,
-    fontSize: 16,
-    alignSelf: 'center',
-    width: '100%',
-    marginLeft: '50%',
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
     shadowOffset: {
-      width: 3,
-      height: 3,
+      width: 0,
+      height: 4,
     },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 10,
+  },
+  cardText: {
+    flex: 8,
+    fontSize: 16,
+    padding: 10,
+    textAlignVertical: 'center',
+  },
+  cardImg: {
+    flex: 3,
+    width: '100%',
+    height: 100,
+    resizeMode: 'cover',
+  },
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
-// <View
-//               style={styles.card}
-//               onTouchStart={() => console.log(item.name)}>
-//               <View style={styles.image}>
-//                 <Text>Images</Text>
-//               </View>
-//               <View style={styles.content}>
-//                 <Text>{item.name}</Text>
-//               </View>
-//             </View>
-// function DiseaseScreen(navigation, props) {
-//   return (
-//     <View style={styles.container}>
-//       <Text>Diseases</Text>
-//       <FlatList
-//         keyExtractor={item => item.key}
-//         data={this.state.data}
-//         renderItem={({item}) => (
-//           <View style={styles.card}>
-//             <View style={styles.image}>
-//               <Image />
-//             </View>
-//             <View style={styles.content}>
-//               <Text>{item.name}</Text>
-//             </View>
-//           </View>
-//         )}
-//       />
-//       <View style={styles.card}>
-//         <View style={styles.image}>
-//           <Image />
-//         </View>
-//         <View style={styles.content}>
-//           <Text>Sometext</Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
+const mapStateToProps = state => ({
+  mainReducer: state,
+});
 
-export default DiseaseScreen;
+const mapDispatchToProps = {
+  redFuncfetchDiseaseDetails: fetchDiseaseDetails,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(DiseaseScreen);

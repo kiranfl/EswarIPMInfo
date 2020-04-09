@@ -8,155 +8,161 @@ import {
   Image,
   FlatList,
   Dimensions,
+  ImageBackground,
+  ActivityIndicator,
+  Animated,
 } from 'react-native';
-import {DrawerActions} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
 import Carousel from 'react-native-snap-carousel';
 import {SafeAreaView} from 'react-native-safe-area-context';
-
-function Uclicked({route, navigation}, props) {
-  const eswar = 'Welcome to the details page Eswar';
-  navigation.navigate('Details', {data: eswar});
-  // navigation.dispatch(DrawerActions.toggleDrawer())
-}
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {fetchCropsData} from '../redux/actions/actions';
+import {connect} from 'react-redux';
 
 class HomeScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: [],
       name: '',
+      data: [],
       originalName: '',
       description: '',
       id: '',
+      img: null,
+      fadeValue: new Animated.Value(0),
     };
   }
-
-  componentDidMount = () => {
-    const url = 'http://23.20.169.44/api/en-us/crops';
-    fetch(url)
-      .then(response => response.json())
-      .then(responsejson => {
-        this.setState({
-          data: responsejson,
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  componentDidMount = async () => {
+    await this.props.redFuncfetchCropsData();
   };
 
-  detailsSet = index => {
-    console.log(index);
+  componentWillReceiveProps = nextProps => {
+    const {cropsList} = nextProps.mainReducer;
+    this.setState({
+      name: cropsList[0].name,
+      originalName: cropsList[0].scientificName,
+      description: cropsList[0].description,
+      id: cropsList[0].id,
+      img: cropsList[0].image,
+    });
+  };
+
+  detailsSet = async index => {
+    const {cropsList} = this.props.mainReducer;
     this.setState(
       {
-        name: this.state.data[index].name,
-        originalName: this.state.data[index].scientificName,
-        description: this.state.data[index].description,
-        id: this.state.data[index].id,
+        name: cropsList[index].name,
+        originalName: cropsList[index].scientificName,
+        description: cropsList[index].description,
+        id: cropsList[index].id,
+        img: cropsList[index].image,
       },
-      function() {
-        console.log(index);
-      },
+      function() {},
     );
   };
-
-  // renderItem = ({item}) => {
-  //   return (
-  //     <View style={{flex: 1, flexDirection: 'row', marginBottom: 3}}>
-  //       <Image
-  //         source={{uri: item.image}}
-  //         style={{width: 100, height: 100, margin: 5}}
-  //       />
-  //       <View styels={{flex: 1, justifyContent: 'center'}}>
-  //         <Text style={{marginBottom: 5}}>{item.name}</Text>
-  //         <Text>{item.scientificName}</Text>
-  //       </View>
-  //     </View>
-  //   );
-  // };
 
   _renderItem = ({item}) => {
     return (
       <View>
-        <Image source={{uri: item.image}} style={{width: 250, height: 250}} />
-        <Text>{item.name}</Text>
+        <Image source={{uri: item.image}} style={styles.image} />
       </View>
     );
   };
 
   render() {
     const {width} = Dimensions.get('window');
+    const {cropsList, isLoading} = this.props.mainReducer;
+    if (isLoading) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
     return (
       <SafeAreaView style={styles.container}>
-        {/* <FlatList
-          data={this.state.data}
-          renderItem={this.renderItem}
-          keyExtractor={item => item.id}
-          numColumns={2}
-        /> */}
+        <View style={styles.name}>
+          <Text style={styles.name}>{this.state.name}</Text>
+        </View>
         <Carousel
           ref={ref => (this.carousel = ref)}
-          // inactiveSlideOpacity={0.6}
-          // inactiveSlideScale={0.65}
-          firstItem={1}
-          sliderWidth={1000}
-          itemWidth={250 / 2}
-          height={150}
-          data={this.state.data}
+          inactiveSlideOpacity={0.4}
+          inactiveSlideScale={0.65}
+          firstItem={2}
+          sliderWidth={width}
+          itemWidth={200}
+          itemHeight={0}
+          data={cropsList}
           renderItem={this._renderItem}
           onSnapToItem={index => this.detailsSet(index)}
-          onBeforeSnapToItem={index => this.detailsSet(index)}
-          containerCustomStyle={{overflow: 'visible'}}
-          contentContainerCustomStyle={{overflow: 'visible'}}
+          styels={{height: 100}}
           enableMomentum={true}
         />
-        <Text>{this.state.name}</Text>
-        <Text>{this.state.originalName}</Text>
-        <Text>{this.state.description}</Text>
-
-        <View style={styles.buttonContainer}>
-          <Button
-            title="More details"
-            onPress={() => this.props.navigation.navigate('MoreDetails', {data: {id: this.state.id}})}
+        <View style={styles.originalNameContainer}>
+          <Text style={styles.originalName}> {this.state.originalName}</Text>
+          <Text>Descriptisdon: {this.state.description}</Text>
+        </View>
+        <View>
+          <ImageBackground
+            source={{uri: this.state.img}}
+            style={styles.imagePreview}
           />
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            borderTopColor: 'gray',
+            borderTopWidth: 0.6,
+            backgroundColor: 'white',
+          }}>
+          <TouchableOpacity style={{flex: 2, alignItems: 'center'}} />
+          <TouchableOpacity
+            onPress={() =>
+              this.props.navigation.navigate('MoreDetails', {
+                data: {id: this.state.id},
+              })
+            }
+            style={{flex: 6, alignItems: 'center'}}>
+            <View>
+              <Text
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  fontWeight: 'Bold',
+                  fontSize: hp('3%'),
+                  marginTop: hp('2%'),
+                }}>
+                More details
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={{flex: 2, alignItems: 'center'}}>
+            <View style={{marginTop: 20, alignSelf: 'flex-end'}}>
+              <View
+                style={{
+                  width: 30,
+                  padding: 5,
+                  paddingLeft: 8,
+                  height: 30,
+                  borderWidth: 1,
+                  borderRadius: 50,
+                  backgroundColor: 'gray',
+                  borderColor: 'gray',
+                }}>
+                <Icon size={20} name="chevron-right" color="white" />
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 }
-
-// function HomeScreen({navigation}, props) {
-//   return (
-//     <View style={styles.container}>
-//       <FlatList
-//         numColumns={1}
-//         keyExtractor={item => item.id}
-//         data={this.state.data}
-//         renderItem={({item}) => (
-//           <View style={styles.card}>
-//             <Image style={styles.image} source={require('../download.png')} />
-//             <TouchableOpacity
-//               style={styles.textClick}
-//               onPress={() =>
-//                 this.props.navigation.navigate('Preview', {
-//                   data: {name: item.name},
-//                 })
-//               }>
-//               <Text style={styles.content}>{item.name}</Text>
-//             </TouchableOpacity>
-//           </View>
-//         )}
-//       />
-//       <View style={styles.buttonContainer}>
-//         <Button
-//           title="More details"
-//           onPress={() => navigation.navigate('MoreDetails')}
-//         />
-//       </View>
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {
@@ -164,8 +170,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loader: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselContainer: {},
+  name: {
+    fontSize: 30,
+  },
+  animationView: {},
+  imagePreview: {
+    justifyContent: 'center',
+    width: wp('100%'),
+    height: hp('30%'),
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  description: {},
+  originalNameContainer: {},
+  originalName: {
+    fontSize: 20,
+  },
   buttonContainer: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
   card: {
     backgroundColor: '#fff',
@@ -174,16 +207,6 @@ const styles = StyleSheet.create({
     width: '96%',
     borderColor: 'black',
     borderWidth: 1,
-  },
-  textClick: {
-    alignItems: 'center',
-    backgroundColor: 'gray',
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: 200,
   },
   content: {
     padding: 10,
@@ -201,4 +224,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+const mapStateToProps = state => ({
+  mainReducer: state,
+});
+
+const mapDispatchToProps = {
+  redFuncfetchCropsData: fetchCropsData,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(HomeScreen);
