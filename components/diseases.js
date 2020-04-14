@@ -36,9 +36,11 @@ class DiseaseScreen extends React.Component {
     const diseasesArray = diseasesListAndPestsList.filter(
       val => val.name === 'Diseases',
     );
+    if (diseasesArray !== undefined && diseasesArray.length > 0) {
     this.setState({
       diseasesList: diseasesArray[0]._subCategories,
     });
+  }
   };
 
   renderItem = ({item, index}) => {

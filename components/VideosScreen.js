@@ -6,12 +6,17 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import {DrawerActions} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {connect} from 'react-redux';
 import HomeSreen from './Home';
-import {fetchDiseaseDetails} from '../redux/actions/actions';
+import {fetchVideos} from '../redux/actions/actions';
+import Header from './Header';
+// import { Thumbnail } from 'react-native-thumbnail-video';
+import Reactotron from 'reactotron-react-native';
+import LinkPreview from 'react-native-link-preview';
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -19,87 +24,84 @@ function Uclicked({route, navigation}, props) {
   // navigation.dispatch(DrawerActions.toggleDrawer())
 }
 
-class PestsScreen extends React.Component {
+class VideosScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pestsList: [],
+      items: [],
+      title: '',
     };
   }
 
-
-  // componentDidMount = () => {
-  //   const {diseasesListAndPestsList} = this.props.mainReducer;
-  //   const pestsArray = diseasesListAndPestsList.filter(
-  //     val => val.name === 'Pests',
-  //   );
-  //   // alert(JSON.stringify(pestsArray)); 
-  //   this.setState({
-  //     pestsList: pestsArray[0]._subCategories,
-  //   });
-  //   // alert(JSON.stringify(this.state.pestsList)); 
-  // };
-
-  componentWillReceiveProps = nextProps => {
-
-    
-    const {diseasesListAndPestsList} = nextProps.mainReducer;
-    const pestsArray = diseasesListAndPestsList.filter(
-      val => val.name === 'Pests',
-    );
-    // alert(JSON.stringify(pestsArray)); 
+  componentDidMount = async () => {
+    await this.MakeRequest();
+    const {videos} = this.props.mainReducer;
+    let _tempLinkData = [];
+    Reactotron.log(videos.value);
     this.setState({
-      pestsList: pestsArray[0]._subCategories,
-    });
-    // alert(JSON.stringify(this.state.pestsList)); 
-  }
+        isLoaded: true,
+    })
+    for (let link of videos.value) {
+      await LinkPreview.getPreview(link.url).then(data => {
+        let _newLinkDetails = {
+          link: link.url,
+          title: data.title,
+          thumbnail: data.images[0],
+        };
+        _tempLinkData.push(_newLinkDetails);
+      });
+    }
+    this.setState({items: _tempLinkData, isLoaded: false });
+  };
 
-  componentWillMount = () => {
-    const {diseasesListAndPestsList} = this.props.mainReducer;
-    const pestsArray = diseasesListAndPestsList.filter(
-      val => val.name === 'Pests',
-    );
-    // alert(JSON.stringify(pestsArray)); 
+  MakeRequest = async () => {
+    await this.props.redFuncfetchVideos();
+    const {videos} = this.props.mainReducer;
     this.setState({
-      pestsList: pestsArray[0]._subCategories,
+      title: videos.name,
     });
-    // alert(JSON.stringify(this.state.pestsList)); 
-  }
+  };
 
   renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() =>
-          this.props.navigation.navigate('diseaseDetails', {
-            data: {id: item._catposts[0]._id, name: item.name},
-          })
-        }>
-        <Image style={styles.cardImg} source={{uri: item.image}} />
-        <Text style={styles.cardText}>{item.name}</Text>
+        // onPress={() =>
+        //   this.props.navigation.navigate('diseaseDetails', {
+        //     data: {id: item._catposts[0]._id, name: item.name},
+        //   })
+        // }
+        onPress={() => {
+          Linking.openURL(`${item.link}`);
+        }}>
+        <Image style={styles.cardImg} source={{uri: item.thumbnail}} />
+
+        {/* <Thumbnail url={item.url} /> */}
+        <Text style={styles.cardText}>{item.title}</Text>
       </TouchableOpacity>
     );
   };
-
   render() {
-    const {pestsList} = this.state;
+    const {items} = this.state;
     const {diseasesListAndPestsList, isLoading} = this.props.mainReducer;
-    if (isLoading) {
+    if (isLoading || this.state.isLoaded) {
       return (
         <View style={styles.loader}>
           <ActivityIndicator size="large" />
         </View>
       );
     }
+    const navigation = this.props.navigation;
     return (
       <View style={styles.container}>
+        <Header navigation={navigation} />
         <View
           style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Pests</Text>
+          <Text style={{fontSize: 25, fontWeight: 'bold'}}>{this.state.title}</Text>
         </View>
         <FlatList
           style={styles.diseaseList}
-          data={pestsList}
+          data={items}
           keyExtractor={(item, index) => index.toString()}
           renderItem={this.renderItem}
         />
@@ -157,9 +159,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
+  redFuncfetchVideos: fetchVideos,
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PestsScreen);
+)(VideosScreen);

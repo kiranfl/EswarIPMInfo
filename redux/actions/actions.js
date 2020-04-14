@@ -1,4 +1,5 @@
 import * as ACTION_TYPES from './types';
+import reactotron from 'reactotron-react-native';
 
 export const fetchingInProgress = () => {
   return {
@@ -24,8 +25,29 @@ export const fetchingDiseasePestsDetailsSuccess = json => {
   return {
     type: ACTION_TYPES.GET_DISEASE_AND_PESTS_DETAILS_SUCCESS,
     payload: json,
-  }
-}
+  };
+};
+
+export const fetchStrawberryAndVegieDetailsSuccess = json => {
+  return {
+    type: ACTION_TYPES.GET_STRAWBERRIESANDVEGIES,
+    payload: json,
+  };
+};
+
+export const fetchPestsNewsSuccess = json => {
+  return {
+    type: ACTION_TYPES.GET_PESTS_NEWS,
+    payload: json,
+  };
+};
+
+export const fetchVideosSuccess = json => {
+  return {
+    type: ACTION_TYPES.GET_VIDEOS,
+    payload: json,
+  };
+};
 
 export const fetchCropsData = () => {
   return async dispatch => {
@@ -39,13 +61,79 @@ export const fetchCropsData = () => {
     })
       .then(response => response.json())
       .then(responseJson => {
-        return dispatch(fetchingSuccess(responseJson));
+        let formatdata = [];
+        for (let i = 0; i < responseJson.length; i++) {
+          let obj = responseJson[i];
+          obj.selected = false;
+          formatdata.push(obj);
+        }
+        dispatch(fetchingSuccess(formatdata));
       })
       .catch(function(error) {
         dispatch(fetchingFailure(error));
       });
   };
 };
+
+export const fetchStrawberryAndVegieDetails = () => {
+  return async dispatch => {
+    dispatch(fetchingInProgress());
+    return fetch('http://23.20.169.44/api/menu/starwberry-veg-news', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        dispatch(fetchStrawberryAndVegieDetailsSuccess(responseJson));
+      })
+      .catch(function(error) {
+        dispatch(fetchingFailure(error));
+      });
+  };
+};
+
+export const fetchPestsNews = () => {
+  return async dispatch => {
+    dispatch(fetchingInProgress());
+    return fetch('http://23.20.169.44/api/menu/pest-news', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        dispatch(fetchPestsNewsSuccess(responseJson));
+      })
+      .catch(function(error) {
+        dispatch(fetchingFailure(error));
+      });
+  };
+};
+
+export const fetchVideos = () => {
+  return async dispatch => {
+    dispatch(fetchingInProgress());
+    return fetch('http://23.20.169.44/api/menu/videos', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        dispatch(fetchVideosSuccess(responseJson));
+      })
+      .catch(function(error) {
+        dispatch(fetchingFailure(error));
+      });
+  };
+}
 
 export const fetchDiseaseDetails = cropId => {
   return async dispatch => {

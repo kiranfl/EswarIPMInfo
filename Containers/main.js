@@ -7,6 +7,9 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import Root from './Root';
+import StarwberryVegetable from '../components/strawberriesAndVegie';
+import PestsNews from '../components/pestsNews';
+import VideosScreen from '../components/VideosScreen';
 
 function CustomDrawerContent(props) {
   return (
@@ -35,13 +38,16 @@ function Main() {
       <Drawer.Screen name="Discover" component={DetailsScreen} />
       <Drawer.Screen name="Meeting Handouts" component={DetailsScreen} />
       <Drawer.Screen name="Meeting Presentations" component={DetailsScreen} />
-      <Drawer.Screen name="Videos" component={DetailsScreen} />
+      <Drawer.Screen name="Videos" component={VideosScreen} />
       <Drawer.Screen name="About Us" component={DetailsScreen} />
       <Drawer.Screen name="Notifications" component={DetailsScreen} />
       <Drawer.Screen name="Preferences" component={DetailsScreen} />
       <Drawer.Screen name="Feedback" component={DetailsScreen} />
-      <Drawer.Screen name="Strawberries-Vegetables" component={DetailsScreen} />
-      <Drawer.Screen name="PestNews" component={DetailsScreen} />
+      <Drawer.Screen
+        name="Strawberries-Vegetables"
+        component={StarwberryVegetable}
+      />
+      <Drawer.Screen name="PestNews" component={PestsNews} />
     </Drawer.Navigator>
   );
 }

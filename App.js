@@ -1,23 +1,29 @@
-import * as React from 'react';
+import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Splash from './components/splash';
 import Main from './containers/main';
-import {Provider} from 'react-redux';
+import {Provider, connect } from 'react-redux';
 // import store from './store';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import mainReducer from './reducers/mainReducer';
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 
 const Stack = createStackNavigator();
-const createStoreWithMiddleWare = applyMiddleware(thunk);
+const store = createStore(mainReducer, applyMiddleware(thunk));
+// const store = createStore(mainReducer, composeEnhancers(applyMiddleware(thunk)));
+
+if(__DEV__) {
+  import('./ReactronConfig').then(() => console.log('Reactotron Configured'))
+}
 
 
-const store = createStore(mainReducer, createStoreWithMiddleWare);
 
-function App() {
+function Apps() {
+  
   return (
-    <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -32,8 +38,30 @@ function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </Provider>
   );
 }
 
-export default App;
+class App extends Component {
+  render() {
+    return (
+      <Apps />
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return (
+    {
+    }
+  )
+};
+
+
+const AppWithNavigationState = connect(mapStateToProps)(App);
+export default function NCAP() {
+  return (
+    <Provider store={store}>
+      <AppWithNavigationState />
+    </Provider>
+  );
+}

@@ -13,6 +13,7 @@ import MoreDetailsScreen from './moredetails';
 import HomeScreen from '../components/Home';
 import PreviewScreen from '../components/previewDisease';
 import Splash from '../components/splash';
+import Header from '../components/Header'
 
 const Stack = createStackNavigator();
 
@@ -20,9 +21,12 @@ function ButtonClick() {
   return <Text>IPMinfo</Text>;
 }
 
+// const navigation = this.props.navigation;
+
 function Root({navigation}, props) {
   return (
     <Stack.Navigator>
+        {/* <Header navigation={navigation} /> */}
       <Stack.Screen
         name="Home"
         component={HomeScreen}

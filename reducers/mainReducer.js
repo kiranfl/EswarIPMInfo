@@ -6,6 +6,9 @@ const initialState = {
   isLoading: false,
   errorMessage: '',
   diseasesListAndPestsList: [],
+  strawberriesAndVegies: [],
+  PestsNews: [],
+  video: [],
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -32,6 +35,24 @@ const mainReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         diseasesListAndPestsList: action.payload,
+      };
+    case ACTION_TYPES.GET_STRAWBERRIESANDVEGIES:
+      return {
+        ...state,
+        isLoading: false,
+        strawberriesAndVegies: action.payload,
+      };
+    case ACTION_TYPES.GET_PESTS_NEWS:
+      return {
+        ...state,
+        isLoading: false,
+        PestsNews: action.payload,
+      };
+    case ACTION_TYPES.GET_VIDEOS:
+      return {
+        ...state,
+        isLoading: false,
+        videos: action.payload,
       };
     default:
       return state;

@@ -37,10 +37,12 @@ class HomeScreen extends React.Component {
   }
   componentDidMount = async () => {
     await this.props.redFuncfetchCropsData();
+
   };
 
   componentWillReceiveProps = nextProps => {
     const {cropsList} = nextProps.mainReducer;
+if(cropsList !== undefined && cropsList.length > 0) {
     this.setState({
       name: cropsList[0].name,
       originalName: cropsList[0].scientificName,
@@ -48,6 +50,7 @@ class HomeScreen extends React.Component {
       id: cropsList[0].id,
       img: cropsList[0].image,
     });
+  }
   };
 
   detailsSet = async index => {
