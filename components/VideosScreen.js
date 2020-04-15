@@ -66,17 +66,10 @@ class VideosScreen extends React.Component {
     return (
       <TouchableOpacity
         style={styles.card}
-        // onPress={() =>
-        //   this.props.navigation.navigate('diseaseDetails', {
-        //     data: {id: item._catposts[0]._id, name: item.name},
-        //   })
-        // }
         onPress={() => {
           Linking.openURL(`${item.link}`);
         }}>
         <Image style={styles.cardImg} source={{uri: item.thumbnail}} />
-
-        {/* <Thumbnail url={item.url} /> */}
         <Text style={styles.cardText}>{item.title}</Text>
       </TouchableOpacity>
     );

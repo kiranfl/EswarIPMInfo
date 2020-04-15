@@ -10,8 +10,7 @@ import {
 import {DrawerActions} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {connect} from 'react-redux';
-import HomeSreen from './Home';
-import {fetchDiseaseDetails} from '../redux/actions/actions';
+import Reactotron from 'reactotron-react-native';
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -27,44 +26,13 @@ class PestsScreen extends React.Component {
     };
   }
 
-
-  // componentDidMount = () => {
-  //   const {diseasesListAndPestsList} = this.props.mainReducer;
-  //   const pestsArray = diseasesListAndPestsList.filter(
-  //     val => val.name === 'Pests',
-  //   );
-  //   // alert(JSON.stringify(pestsArray)); 
-  //   this.setState({
-  //     pestsList: pestsArray[0]._subCategories,
-  //   });
-  //   // alert(JSON.stringify(this.state.pestsList)); 
-  // };
-
-  componentWillReceiveProps = nextProps => {
-
-    
-    const {diseasesListAndPestsList} = nextProps.mainReducer;
-    const pestsArray = diseasesListAndPestsList.filter(
-      val => val.name === 'Pests',
-    );
-    // alert(JSON.stringify(pestsArray)); 
-    this.setState({
-      pestsList: pestsArray[0]._subCategories,
-    });
-    // alert(JSON.stringify(this.state.pestsList)); 
-  }
-
-  componentWillMount = () => {
+  componentDidMount = async () => {
     const {diseasesListAndPestsList} = this.props.mainReducer;
-    const pestsArray = diseasesListAndPestsList.filter(
-      val => val.name === 'Pests',
-    );
-    // alert(JSON.stringify(pestsArray)); 
+    const pestsArray = diseasesListAndPestsList[1];
     this.setState({
-      pestsList: pestsArray[0]._subCategories,
+      pestsList: pestsArray._subCategories,
     });
-    // alert(JSON.stringify(this.state.pestsList)); 
-  }
+  };
 
   renderItem = ({item, index}) => {
     return (
@@ -156,8 +124,7 @@ const mapStateToProps = state => ({
   mainReducer: state,
 });
 
-const mapDispatchToProps = {
-};
+const mapDispatchToProps = {};
 
 export default connect(
   mapStateToProps,

@@ -10,6 +10,7 @@ import Root from './Root';
 import StarwberryVegetable from '../components/strawberriesAndVegie';
 import PestsNews from '../components/pestsNews';
 import VideosScreen from '../components/VideosScreen';
+import FeedBack from '../components/feedBack';
 
 function CustomDrawerContent(props) {
   return (
@@ -31,18 +32,10 @@ const Drawer = createDrawerNavigator();
 
 function Main() {
   return (
-    <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} />}
-      initialRouteName="Farm Crops">
+    <Drawer.Navigator initialRouteName="Farm Crops">
       <Drawer.Screen name="Farm Crops" component={Root} />
-      <Drawer.Screen name="Discover" component={DetailsScreen} />
-      <Drawer.Screen name="Meeting Handouts" component={DetailsScreen} />
-      <Drawer.Screen name="Meeting Presentations" component={DetailsScreen} />
       <Drawer.Screen name="Videos" component={VideosScreen} />
-      <Drawer.Screen name="About Us" component={DetailsScreen} />
-      <Drawer.Screen name="Notifications" component={DetailsScreen} />
-      <Drawer.Screen name="Preferences" component={DetailsScreen} />
-      <Drawer.Screen name="Feedback" component={DetailsScreen} />
+      <Drawer.Screen name="Feedback" component={FeedBack} />
       <Drawer.Screen
         name="Strawberries-Vegetables"
         component={StarwberryVegetable}

@@ -12,6 +12,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {connect} from 'react-redux';
 import HomeSreen from './Home';
 import {fetchDiseaseDetails} from '../redux/actions/actions';
+import Reactotron from 'reactotron-react-native'
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -27,20 +28,18 @@ class DiseaseScreen extends React.Component {
     };
   }
 
-  componentDidMount = () => {
-    this.props.redFuncfetchDiseaseDetails(this.props.route.params.id);
-  };
+  componentDidMount = async () => {
+    await this.props.redFuncfetchDiseaseDetails(this.props.route.params.id);
+    const {diseasesListAndPestsList} = this.props.mainReducer;
 
-  componentWillReceiveProps = nextProps => {
-    const {diseasesListAndPestsList} = nextProps.mainReducer;
     const diseasesArray = diseasesListAndPestsList.filter(
       val => val.name === 'Diseases',
     );
     if (diseasesArray !== undefined && diseasesArray.length > 0) {
-    this.setState({
-      diseasesList: diseasesArray[0]._subCategories,
-    });
-  }
+      this.setState({
+        diseasesList: diseasesArray[0]._subCategories,
+      });
+    }
   };
 
   renderItem = ({item, index}) => {

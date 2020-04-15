@@ -133,7 +133,7 @@ export const fetchVideos = () => {
         dispatch(fetchingFailure(error));
       });
   };
-}
+};
 
 export const fetchDiseaseDetails = cropId => {
   return async dispatch => {
@@ -153,4 +153,22 @@ export const fetchDiseaseDetails = cropId => {
         dispatch(fetchingFailure(error));
       });
   };
+};
+
+export const postComments = commetsObj => {
+  const url = 'http://23.20.169.44/api/feedbacks';
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(commetsObj),
+  })
+    .then(response => response.json())
+    .then(responsejson => {
+      // eslint-disable-next-line no-alert
+      alert('Feed back submitted successfully');
+    })
+    .catch(error => {});
 };
