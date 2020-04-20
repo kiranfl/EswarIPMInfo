@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import Splash from './components/splash';
-import Main from './containers/main';
+import Splash from './src/components/splash';
+import Main from './src/containers/main';
 import {Provider, connect } from 'react-redux';
 // import store from './store';
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
-import mainReducer from './reducers/mainReducer';
+import mainReducer from './src/reducers/mainReducer';
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 

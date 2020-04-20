@@ -10,7 +10,11 @@ import {
 import {DrawerActions} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {connect} from 'react-redux';
+import HomeSreen from './Home';
+import {fetchDiseaseDetails} from '../redux/actions/actions';
 import Reactotron from 'reactotron-react-native';
+import DetailsScreen from './Details';
+import {getPreviewDetails} from '../redux/actions/actions';
 
 function Uclicked({route, navigation}, props) {
   const eswar = 'Welcome to the details page Eswar';
@@ -18,39 +22,50 @@ function Uclicked({route, navigation}, props) {
   // navigation.dispatch(DrawerActions.toggleDrawer())
 }
 
-class PestsScreen extends React.Component {
+class DiseaseScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pestsList: [],
+      diseasesList: [],
     };
   }
 
   componentDidMount = async () => {
+    await this.props.redFuncfetchDiseaseDetails(this.props.route.params.id);
     const {diseasesListAndPestsList} = this.props.mainReducer;
-    const pestsArray = diseasesListAndPestsList[1];
-    this.setState({
-      pestsList: pestsArray._subCategories,
-    });
+
+    const diseasesArray = diseasesListAndPestsList.filter(
+      val => val.name === 'Diseases',
+    );
+    if (diseasesArray !== undefined && diseasesArray.length > 0) {
+      this.setState({
+        diseasesList: diseasesArray[0]._subCategories,
+      });
+    }
+  };
+
+  navigateToPreviewScreen = async item => {
+    const catposts = item._catposts;
+    const details = [];
+    for (let i = 0; i < catposts.length; i++) {
+      let getResult = await getPreviewDetails(catposts[i]._id);
+      details.push(getResult);
+    }
+    this.props.navigation.navigate('PreviewScreen', details);
   };
 
   renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() =>
-          this.props.navigation.navigate('diseaseDetails', {
-            data: {id: item._catposts[0]._id, name: item.name},
-          })
-        }>
+        onPress={() => this.navigateToPreviewScreen(item)}>
         <Image style={styles.cardImg} source={{uri: item.image}} />
         <Text style={styles.cardText}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
-
   render() {
-    const {pestsList} = this.state;
+    const {diseasesList} = this.state;
     const {diseasesListAndPestsList, isLoading} = this.props.mainReducer;
     if (isLoading) {
       return (
@@ -63,11 +78,11 @@ class PestsScreen extends React.Component {
       <View style={styles.container}>
         <View
           style={{flex: 0.1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Pests</Text>
+          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Diseases</Text>
         </View>
         <FlatList
           style={styles.diseaseList}
-          data={pestsList}
+          data={diseasesList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={this.renderItem}
         />
@@ -124,9 +139,11 @@ const mapStateToProps = state => ({
   mainReducer: state,
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  redFuncfetchDiseaseDetails: fetchDiseaseDetails,
+};
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PestsScreen);
+)(DiseaseScreen);

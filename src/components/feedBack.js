@@ -167,7 +167,7 @@ class Feedback extends React.Component {
           />
           {this.state.isValid &&
           (this.state.email === '' || this.state.email === undefined) ? (
-            <Text>Please enter the comments</Text>
+            <Text style={{color: 'red'}}>Please enter the email</Text>
           ) : null}
         </View>
         <View
@@ -188,7 +188,7 @@ class Feedback extends React.Component {
           />
           {this.state.isValid &&
           (this.state.comments === '' || this.state.comments === undefined) ? (
-            <Text>Please enter the comments</Text>
+            <Text style={{color: 'red'}}>Please enter the comments</Text>
           ) : null}
         </View>
         <View style={styles.wrap}>

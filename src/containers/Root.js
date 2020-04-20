@@ -11,7 +11,8 @@ import {DrawerActions} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MoreDetailsScreen from './moredetails';
 import HomeScreen from '../components/Home';
-import PreviewScreen from '../components/previewDisease';
+import PreviewScreen from '../components/previewScreen';
+import imagePreview from '../components/carousel';
 import Splash from '../components/splash';
 import Header from '../components/Header';
 import {
@@ -23,18 +24,19 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const Stack = createStackNavigator();
 
 function ButtonClick() {
-  return <Text
-  style={{
-    marginLeft: wp('0.5%'),
-    alignItems: 'center',
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 25,
-    top: hp('0.5%'),
-
-  }}>
-  IPMInfo
-</Text>;
+  return (
+    <Text
+      style={{
+        marginLeft: wp('0.5%'),
+        alignItems: 'center',
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 25,
+        top: hp('0.5%'),
+      }}>
+      IPMInfo
+    </Text>
+  );
 }
 
 // const navigation = this.props.navigation;
@@ -79,7 +81,16 @@ function Root({navigation}, props) {
           headerStyle: {backgroundColor: 'rgb(235, 183, 52)'},
         }}
       />
-      <Stack.Screen name="Preview" component={PreviewScreen} />
+      <Stack.Screen
+        name="PreviewScreen"
+        component={PreviewScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="imagePreview"
+        component={imagePreview}
+        options={{headerShown: false}}
+        />
     </Stack.Navigator>
   );
 }

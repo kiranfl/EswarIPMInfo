@@ -172,3 +172,20 @@ export const postComments = commetsObj => {
     })
     .catch(error => {});
 };
+
+export function getPreviewDetails(id) {
+  return fetch(`http://23.20.169.44/api/en-us/posts/${id}?type=plain`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(response => response.json())
+    .then(responseJson => {
+      return responseJson;
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+}

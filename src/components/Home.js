@@ -42,7 +42,7 @@ class HomeScreen extends React.Component {
     const {cropsList} = this.props.mainReducer;
     if (cropsList !== undefined && cropsList.length > 0) {
       this.setState({
-        name: cropsList[0].name,
+        name: cropsList[1].name,
         originalName: cropsList[0].scientificName,
         description: cropsList[0].description,
         id: cropsList[0].id,
